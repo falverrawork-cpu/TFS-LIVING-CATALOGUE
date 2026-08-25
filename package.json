@@ -1,0 +1,18 @@
+{
+  "name": "tfs-living-catalogue-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.19.0",
+  "engines": {
+    "node": ">=22 <25"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter ./frontend --filter ./backend dev",
+    "dev:frontend": "pnpm --dir frontend dev",
+    "dev:backend": "pnpm --dir backend dev",
+    "build": "pnpm --recursive build",
+    "test": "pnpm --recursive test",
+    "typecheck": "pnpm --recursive typecheck",
+    "hosting:check": "pnpm --dir frontend build"
+  }
+}

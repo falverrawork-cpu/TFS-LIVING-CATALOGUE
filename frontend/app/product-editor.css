@@ -1,0 +1,23 @@
+.rank-badge { display: inline-grid; place-items: center; min-width: 28px; height: 28px; padding: 0 8px; color: #9e3a1c; background: #fff0eb; border-radius: 8px; font-weight: 800; }
+.row-actions { display: flex; gap: 6px; }
+.icon-btn { display: inline-grid; place-items: center; width: 32px; height: 32px; color: #555; background: #fff; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
+.icon-btn:hover { color: var(--orange); border-color: #ffc7b5; }
+.icon-btn.danger:hover { color: #a82d24; background: #fff3f1; border-color: #efb9b3; }
+.editor-backdrop { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 24px; background: #1119; backdrop-filter: blur(3px); }
+.product-editor { width: min(720px, 100%); max-height: calc(100vh - 48px); overflow: auto; padding: 24px; background: #fff; border-radius: 16px; box-shadow: 0 24px 80px #0005; }
+.product-editor-head, .product-editor-foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.product-editor-head h2 { margin: 5px 0 0; }
+.product-editor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+.product-editor-grid label { display: grid; gap: 7px; }
+.product-editor-grid label.wide { grid-column: 1 / -1; }
+.product-editor-grid label span { color: #656662; font-size: 12px; font-weight: 800; }
+.product-editor-grid input, .product-editor-grid select { width: 100%; padding: 10px 12px; background: #fff; border: 1px solid var(--line); border-radius: 9px; outline: none; }
+.product-editor-grid input:focus, .product-editor-grid select:focus { border-color: var(--orange); box-shadow: 0 0 0 3px #f4512418; }
+.danger-text { color: #a82d24; }
+.head-actions { display: flex; align-items: center; gap: 9px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.collection-actions { display: flex; gap: 6px; }
+.collection-editor { width: min(620px, 100%); }
+.collection-editor-grid { grid-template-columns: 2fr 1fr; }
+.field-error { margin: -10px 0 18px; color: #a82d24; font-size: 13px; font-weight: 700; }
+@media (max-width: 700px) { .product-editor-grid { grid-template-columns: 1fr; } .product-editor-grid label.wide { grid-column: auto; } }

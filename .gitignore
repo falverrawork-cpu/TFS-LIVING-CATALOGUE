@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+node_modules.broken-*/
+.pnpm-store/
+
+# Framework and build output
+.next/
+.next-*/
+dist/
+coverage/
+output/
+*.tsbuildinfo
+
+# Environment secrets
+.env
+.env.local
+.env.*.local
+
+# Temporary files
+tmp/
+*.log
+.DS_Store
+Thumbs.db
+
+# IDE metadata
+.idea/
+.vscode/

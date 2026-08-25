@@ -1,0 +1,5 @@
+export type Product = { id:string; productCode:string; productName:string; collectionId:string; collectionName:string; price:number; lengthCm:number; widthCm:number; heightCm:number; lengthInch:number; widthInch:number; heightInch:number; primaryImage:string; highlightImage?:string; displayOrder:number; isActive:boolean; isHighlighted:boolean; showInProductGrid:boolean };
+export type Collection = { id:string; name:string; slug:string; displayOrder:number; isActive:boolean; products:Product[] };
+export type HighlightPlacement = "after-opener"|"after-grid"|"end";
+export type HighlightConfig = { productId:string; placement:HighlightPlacement; afterGrid?:number; textPosition?:"top-left"|"top-right"|"center"|"bottom-left"|"bottom-right"; overlayDarkness?:number; highlightImage?:string };
+export type PageSpec = { page:number; type:"cover"|"index"|"about"|"collection-cover"|"product-grid"|"highlight"|"back-cover"; title?:string; collectionId?:string; products?:Product[]; product?:Product; indexEntries?:{label:string;page:number}[] };

@@ -1,0 +1,262 @@
+import type { CSSProperties } from "react";
+import type { PageSpec, Product } from "@/types/catalogue";
+import type { TypographyPreset } from "@/lib/catalogue/typography";
+import { aboutDefaultStyles, toCss, toExactCss, toLogoCss, type ContentStyle } from "@/lib/catalogue/layout-presets";
+const money = (n: number) => `Rs. ${n.toLocaleString("en-IN")}/-`;
+export function Logo({
+  variant = "black",
+  large = false,
+  monochrome = false,
+}: {
+  variant?: "black" | "white";
+  large?: boolean;
+  monochrome?: boolean;
+}) {
+  return (
+    <div className={`brand-logo ${large ? "brand-logo-large" : "page-logo"} ${monochrome ? "brand-logo-monochrome" : ""}`}>
+      <img
+        src={`/brand/tfs-living-${variant}.png`}
+        alt="TFS Living - Your Furniture, Your Story"
+      />
+    </div>
+  );
+}
+export function Folio({ page, totalPages }: { page: number; totalPages: number }) {
+  return (
+    <div className="folio">
+      Page {page} of {totalPages}
+    </div>
+  );
+}
+export function ProductCard({
+  p,
+  styles = {},
+}: {
+  p: Product;
+  styles?: Record<string, ContentStyle>;
+}) {
+  return (
+    <div className="product-card">
+      <img src={p.primaryImage} alt={p.productName} />
+      <div className="pcode" style={toCss(styles.productId)}>
+        {p.productCode}
+      </div>
+      <h3 style={toCss(styles.productName)}>{p.productName}</h3>
+      <strong style={toCss(styles.price)}>{money(p.price)}</strong>
+      <div className="dims" style={toCss(styles.dimensions)}>
+        CM - L {p.lengthCm} × W {p.widthCm} × H {p.heightCm}
+        <br />
+        INCH - L {p.lengthInch} × W {p.widthInch} × H {p.heightInch}
+      </div>
+    </div>
+  );
+}
+export function CataloguePage({
+  spec,
+  typography,
+  contentStyles = {},
+  coverImage,
+  backCoverImage,
+  totalPages = 18,
+}: {
+  spec: PageSpec;
+  typography?: TypographyPreset;
+  contentStyles?: Record<string, ContentStyle>;
+  coverImage?: string;
+  backCoverImage?: string;
+  totalPages?: number;
+}) {
+  const pageStyle = {
+    "--type-scale": typography?.scale ?? 2,
+    "--type-leading": typography?.lineHeight ?? 1,
+    "--type-tracking": `${typography?.letterSpacing ?? 0}em`,
+  } as CSSProperties;
+  if (spec.type === "cover")
+    return (
+      <div className="page cover" style={pageStyle}>
+        <img
+          className="cover-bg"
+          src={
+            coverImage ||
+            "https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=1600&q=90"
+          }
+        />
+        <div className="cover-copy">
+          <h1 style={toExactCss(contentStyles.coverTitle ?? { ...aboutDefaultStyles.pageTitle, fontSize: 120, fontWeight: 700 })}>
+            Product
+            <br />
+            Catalogue
+          </h1>
+          <div className="year" style={{...toExactCss(contentStyles.coverYear ?? { ...aboutDefaultStyles.pageTitle, fontSize: 72, fontWeight: 500 }),width:"100%",marginLeft:"auto",marginRight:0,textAlign:"right"}}>
+            2026
+          </div>
+        </div>
+        <div className="cover-brand" style={toLogoCss(contentStyles.logo)}>
+          <Logo variant="white" large />
+          <small style={toCss(contentStyles.brandLine)}>
+            YOUR FURNITURE · YOUR STORY
+          </small>
+        </div>
+        <Folio page={spec.page} totalPages={totalPages} />
+      </div>
+    );
+  if (spec.type === "index")
+    return (
+      <div className="page index-page" style={pageStyle}>
+        <Logo />
+        <h2 className="orange-title" style={toExactCss(contentStyles.pageTitle ?? { ...aboutDefaultStyles.pageTitle, fontSize: 72, fontWeight: 700 })}>
+          iNDEX
+        </h2>
+        <div className="index-list">
+          {spec.indexEntries?.map((x) => (
+            <div className="index-row" key={x.label}>
+              <span style={toCss(contentStyles.indexName)}>
+                {x.label.toUpperCase()}
+              </span>
+              <span style={toCss(contentStyles.indexPage)}>
+                PAGE {String(x.page).padStart(2, "0")}
+              </span>
+            </div>
+          ))}
+        </div>
+        <Folio page={spec.page} totalPages={totalPages} />
+      </div>
+    );
+  if (spec.type === "about")
+    {const aboutStyles={...aboutDefaultStyles,...contentStyles};return (
+      <div className="page" style={pageStyle}>
+        <Logo variant="white" monochrome />
+        <img
+          className="about-image"
+          src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1600&q=90"
+        />
+        <div className="about-top">
+          <h2 style={toExactCss(aboutStyles.pageTitle)}>
+            ABOUT
+            <br />
+            US
+          </h2>
+          <h3 style={toExactCss(aboutStyles.brandTitle)}>TFS LIVING</h3>
+          <p style={toExactCss(aboutStyles.description)}>
+            Through TFS Living, we offer premium furniture pieces that
+            combine European-inspired modern design with the unparalleled
+            quality of Indian craftsmanship. Whether it is for your living room,
+            dining area, or bedroom, each piece is a testament to our commitment
+            to excellence and craftsmanship.
+          </p>
+        </div>
+        <Folio page={spec.page} totalPages={totalPages} />
+      </div>
+    );}
+  if (spec.type === "collection-cover")
+    return (
+      <div className="page" style={pageStyle}>
+        <Logo variant="white" monochrome />
+        <div className="collection-top">
+          <small style={toExactCss(contentStyles.collectionLabel ?? { ...aboutDefaultStyles.pageTitle, fontSize: 36, fontWeight: 400 })}>
+            COLLECTION :
+          </small>
+          <h2 style={toExactCss(contentStyles.collectionTitle ?? { ...aboutDefaultStyles.pageTitle, fontSize: 120, fontWeight: 800, paddingTop: 14 })}>
+            {spec.title?.toUpperCase()}
+          </h2>
+        </div>
+        <div className="collection-products">
+          {spec.products?.map((p) => (
+            <ProductCard key={p.id} p={p} styles={contentStyles} />
+          ))}
+        </div>
+        <Folio page={spec.page} totalPages={totalPages} />
+      </div>
+    );
+  if (spec.type === "product-grid")
+    return (
+      <div className="page product-grid-page" style={pageStyle}>
+        <Logo variant="black" />
+        <div className="products-grid">
+          {spec.products?.map((p) => (
+            <ProductCard key={p.id} p={p} styles={contentStyles} />
+          ))}
+        </div>
+        <Folio page={spec.page} totalPages={totalPages} />
+      </div>
+    );
+  if (spec.type === "highlight" && spec.product)
+    return (
+      <div className="page highlight" style={pageStyle}>
+        <img
+          className="highlight-bg"
+          src={spec.product.highlightImage || spec.product.primaryImage}
+        />
+        <Logo variant="white" />
+        <div className="highlight-id" style={toExactCss(contentStyles.productId ?? { ...aboutDefaultStyles.pageTitle, fontSize: 36, fontWeight: 400 })}>
+          {spec.product.productCode}
+        </div>
+        <div className="highlight-copy">
+          <h2 style={toExactCss(contentStyles.productName ?? { ...aboutDefaultStyles.pageTitle, fontSize: 68, fontWeight: 700 })}>
+            {spec.product.productName}
+          </h2>
+          <strong style={toExactCss(contentStyles.price ?? { ...aboutDefaultStyles.pageTitle, fontSize: 68, fontWeight: 700 })}>
+            {money(spec.product.price)}
+          </strong>
+          <div className="dims" style={toExactCss(contentStyles.dimensions ?? { ...aboutDefaultStyles.pageTitle, fontSize: 30, fontWeight: 400 })}>
+            CM - L {spec.product.lengthCm} × W {spec.product.widthCm} × H{" "}
+            {spec.product.heightCm}
+            <br />
+            INCH - L {spec.product.lengthInch} × W {spec.product.widthInch} × H{" "}
+            {spec.product.heightInch}
+          </div>
+        </div>
+        <Folio page={spec.page} totalPages={totalPages} />
+      </div>
+    );
+  if (spec.type === "back-cover")
+    return (
+      <div className="page back" style={pageStyle}>
+        <img
+          className="back-bg"
+          src={
+            backCoverImage ||
+            "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1600&q=90"
+          }
+        />
+        <Logo variant="white" monochrome />
+        <div className="back-orange">
+          <div className="back-brand" style={toLogoCss(contentStyles.logo)}>
+            <Logo variant="white" large monochrome />
+          </div>
+          <div className="back-details">
+            <p style={toCss(contentStyles.companyDetails)}>
+            KHEMCHAND HANDICRAFTS LIMITED
+            <br />
+            TFS Living Studio, Jodhpur, Rajasthan, India
+            </p>
+            <div className="contacts" style={toCss(contentStyles.contactDetails)}>
+            <div>
+              For Collaboration/Partnership
+              <br />
+              collab@tfsliving.com
+              <br />
+              +91 98765 43210
+            </div>
+            <div>
+              For Projects/Bulk Order
+              <br />
+              projects@tfsliving.com
+              <br />
+              +91 98765 43211
+            </div>
+            <div>
+              For Customer Service
+              <br />
+              care@tfsliving.com
+              <br />
+              +91 98765 43212
+            </div>
+            </div>
+          </div>
+        </div>
+        <Folio page={spec.page} totalPages={totalPages} />
+      </div>
+    );
+  return <div className="page empty">Page unavailable</div>;
+}
