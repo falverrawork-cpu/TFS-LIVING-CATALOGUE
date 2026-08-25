@@ -1,4 +1,4 @@
-import { cpSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const projectRoot = process.cwd();
@@ -20,3 +20,7 @@ const publicSource = join(projectRoot, "public");
 if (existsSync(publicSource)) {
   cpSync(publicSource, join(appRoot, "public"), { recursive: true });
 }
+
+const deploymentRoot = join(projectRoot, "dist");
+rmSync(deploymentRoot, { recursive: true, force: true });
+renameSync(standaloneRoot, deploymentRoot);
