@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import serverlessChromium from "@sparticuz/chromium";
 import { chromium as playwrightChromium } from "playwright-core";
 import { existsSync } from "node:fs";
+import { chmod } from "node:fs/promises";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -21,6 +22,7 @@ export async function POST(request: NextRequest) {
     const systemBrowser = browserCandidates.find(existsSync);
     const executablePath = systemBrowser ?? (process.platform === "linux" ? await serverlessChromium.executablePath() : undefined);
     if (!executablePath) throw new Error("PDF browser is not installed on the hosting server.");
+    if (!systemBrowser) await chmod(executablePath, 0o755);
     const args = systemBrowser
       ? ["--no-sandbox", "--disable-dev-shm-usage"]
       : [...serverlessChromium.args, "--disable-dev-shm-usage"];
