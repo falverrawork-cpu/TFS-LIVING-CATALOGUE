@@ -800,14 +800,39 @@ function Catalogues({ setTab, highlightState, collections }: { setTab: (s: strin
     setExporting(true);
     setExportError("");
     try {
-      await Promise.all(Array.from(document.querySelectorAll<HTMLImageElement>(".in-page-print img")).map((image) =>
+      const exportRoot = document.querySelector<HTMLElement>(".in-page-print");
+      if (!exportRoot) throw new Error("The catalogue pages are not ready.");
+      await Promise.all(Array.from(exportRoot.querySelectorAll<HTMLImageElement>("img")).map((image) =>
         image.complete ? Promise.resolve() : new Promise<void>((resolve) => {
           image.addEventListener("load", () => resolve(), { once: true });
           image.addEventListener("error", () => resolve(), { once: true });
         }),
       ));
       await document.fonts.ready;
-      window.print();
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+        import("html2canvas"),
+        import("jspdf"),
+      ]);
+      const pages = Array.from(exportRoot.querySelectorAll<HTMLElement>(".page"));
+      if (!pages.length) throw new Error("No catalogue pages were found.");
+      exportRoot.style.visibility = "visible";
+      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4", compress: true });
+      try {
+        for (let index = 0; index < pages.length; index += 1) {
+          const canvas = await html2canvas(pages[index], {
+            backgroundColor: "#ffffff",
+            scale: 1.5,
+            useCORS: true,
+            logging: false,
+          });
+          if (index > 0) pdf.addPage("a4", "portrait");
+          pdf.addImage(canvas.toDataURL("image/jpeg", 0.92), "JPEG", 0, 0, 210, 297, `page-${index + 1}`, "FAST");
+        }
+      } finally {
+        exportRoot.style.visibility = "";
+      }
+      pdf.save("TFS-Living-Catalogue-2026.pdf");
     } catch (error) {
       setExportError(error instanceof Error ? error.message : "PDF generation failed. Please try again.");
     } finally {
@@ -859,7 +884,7 @@ function Catalogues({ setTab, highlightState, collections }: { setTab: (s: strin
               disabled={exporting}
             >
               <Download size={15} />
-              {exporting ? "Preparing print..." : "Print / Save PDF"}
+              {exporting ? "Creating PDF..." : "Download PDF"}
             </button>
             <button
               className="btn"
