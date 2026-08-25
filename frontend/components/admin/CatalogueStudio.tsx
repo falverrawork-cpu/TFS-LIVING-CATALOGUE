@@ -56,7 +56,7 @@ const defaultCatalogueMedia: CatalogueMedia = {
   backCoverImage:
     "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1600&q=90",
 };
-export function AdminApp() {
+export function CatalogueStudio() {
   const [tab, setTab] = useState("Dashboard");
   const [highlightState, setHighlightState] = useState<HighlightConfig[]>(highlights);
   const [catalogueCollections, setCatalogueCollections] = useState<Collection[]>(collections);
@@ -859,7 +859,7 @@ function Catalogues({ setTab, highlightState, collections }: { setTab: (s: strin
               disabled={exporting}
             >
               <Download size={15} />
-              {exporting ? "Generating PDF..." : "Download catalogue"}
+              {exporting ? "Preparing print..." : "Print / Save PDF"}
             </button>
             <button
               className="btn"
