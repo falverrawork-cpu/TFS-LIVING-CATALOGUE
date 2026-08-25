@@ -1,4 +1,4 @@
-import { cpSync, existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const projectRoot = process.cwd();
@@ -20,14 +20,6 @@ const publicSource = join(projectRoot, "public");
 if (existsSync(publicSource)) {
   cpSync(publicSource, join(appRoot, "public"), { recursive: true });
 }
-
-const workspacePnpm = join(projectRoot, "..", "node_modules", ".pnpm");
-const standalonePnpm = join(standaloneRoot, "node_modules", ".pnpm");
-const chromiumPackage = readdirSync(workspacePnpm).find((name) => name.startsWith("@sparticuz+chromium@"));
-if (!chromiumPackage) throw new Error("Serverless Chromium package was not installed");
-const chromiumBinSource = join(workspacePnpm, chromiumPackage, "node_modules", "@sparticuz", "chromium", "bin");
-const chromiumBinTarget = join(standalonePnpm, chromiumPackage, "node_modules", "@sparticuz", "chromium", "bin");
-cpSync(chromiumBinSource, chromiumBinTarget, { recursive: true });
 
 const deploymentRoot = join(projectRoot, "dist");
 rmSync(deploymentRoot, { recursive: true, force: true });

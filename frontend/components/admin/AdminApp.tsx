@@ -796,29 +796,13 @@ function Catalogues({ setTab, highlightState, collections }: { setTab: (s: strin
     setPageOrder(next);
     localStorage.setItem("tfs-catalogue-page-order", JSON.stringify(next));
   };
-  const downloadCatalogue = async () => {
+  const downloadCatalogue = () => {
     setExporting(true);
     setExportError("");
     try {
-      const response = await fetch("/api/catalogue/export", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ collections, layout: layoutState, media, highlights: highlightState, pageOrder }),
-      });
-      if (!response.ok) {
-        const failure = await response.json().catch(() => null) as { error?: string } | null;
-        throw new Error(failure?.error || "PDF generation failed");
-      }
-      const pdf = await response.blob();
-      if (pdf.type !== "application/pdf" || pdf.size < 1000) throw new Error("The generated PDF was invalid.");
-      const url = URL.createObjectURL(pdf);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "TFS-Living-Catalogue-2026.pdf";
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      localStorage.setItem("tfs-catalogue-print-export", JSON.stringify({ collections, layout: layoutState, media, highlights: highlightState, pageOrder }));
+      const printWindow = window.open("/catalogue/print?autoprint=1", "_blank");
+      if (!printWindow) throw new Error("Allow pop-ups for this site, then try Export PDF again.");
     } catch (error) {
       setExportError(error instanceof Error ? error.message : "PDF generation failed. Please try again.");
     } finally {

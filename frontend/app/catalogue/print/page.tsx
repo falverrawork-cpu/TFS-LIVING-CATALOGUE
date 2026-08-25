@@ -21,7 +21,16 @@ export default function CataloguePrintPage() {
   const [catalogueCollections, setCatalogueCollections] = useState<Collection[]>(collections);
   const [ready, setReady] = useState(false);
   useEffect(() => {
-    const exported = window.__CATALOGUE_EXPORT__;
+    let exported = window.__CATALOGUE_EXPORT__;
+    try {
+      const stored = localStorage.getItem("tfs-catalogue-print-export");
+      if (stored) {
+        exported = JSON.parse(stored) as ExportSettings;
+        localStorage.removeItem("tfs-catalogue-print-export");
+      }
+    } catch {
+      localStorage.removeItem("tfs-catalogue-print-export");
+    }
     if (exported) {
       if (exported.collections) setCatalogueCollections(exported.collections);
       if (exported.layout) setLayout(exported.layout);
@@ -37,6 +46,18 @@ export default function CataloguePrintPage() {
     try { const value = localStorage.getItem("tfs-catalogue-page-order"); if (value) setPageOrder(JSON.parse(value)); } catch {}
     setReady(true);
   }, []);
+  useEffect(() => {
+    if (!ready || new URLSearchParams(window.location.search).get("autoprint") !== "1") return;
+    const printWhenReady = async () => {
+      await Promise.all(Array.from(document.images).map((image) => image.complete ? Promise.resolve() : new Promise<void>((resolve) => {
+        image.addEventListener("load", () => resolve(), { once: true });
+        image.addEventListener("error", () => resolve(), { once: true });
+      })));
+      await document.fonts.ready;
+      window.setTimeout(() => window.print(), 300);
+    };
+    void printWhenReady();
+  }, [ready]);
   const manifest = useMemo(() => orderCatalogueManifest(buildCatalogueManifest(catalogueCollections, highlightState), pageOrder), [catalogueCollections, highlightState, pageOrder]);
   if (!ready) return <main>Preparing catalogue...</main>;
   return <main id="catalogue-ready" className="print-catalogue">{manifest.map((spec) => <CataloguePage key={spec.page} spec={spec} totalPages={manifest.length} contentStyles={presetForPage(layout, spec.page)?.styles} coverImage={media.coverImage} backCoverImage={media.backCoverImage} />)}</main>;
