@@ -13,7 +13,7 @@ export function Logo({
   monochrome?: boolean;
 }) {
   return (
-    <div className={`brand-logo ${large ? "brand-logo-large" : "page-logo"} ${monochrome ? "brand-logo-monochrome" : ""}`}>
+    <div className={`brand-logo ${large ? "brand-logo-large" : "page-logo"} ${monochrome || variant === "white" ? "brand-logo-monochrome" : ""}`}>
       <img
         src={`/brand/tfs-living-${variant}.png`}
         alt="TFS Living - Your Furniture, Your Story"
@@ -171,7 +171,6 @@ export function CataloguePage({
   if (spec.type === "product-grid")
     return (
       <div className="page product-grid-page" style={pageStyle}>
-        <Logo variant="black" />
         <div className="products-grid">
           {spec.products?.map((p) => (
             <ProductCard key={p.id} p={p} styles={contentStyles} />
