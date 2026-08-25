@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { chromium } from "playwright-core";
+import serverlessChromium from "@sparticuz/chromium";
+import { chromium as playwrightChromium } from "playwright-core";
 import { existsSync } from "node:fs";
 
 export const runtime = "nodejs";
@@ -17,9 +18,13 @@ export async function POST(request: NextRequest) {
   let browser;
   try {
     const settings = await request.json();
-    const executablePath = browserCandidates.find(existsSync);
+    const systemBrowser = browserCandidates.find(existsSync);
+    const executablePath = systemBrowser ?? (process.platform === "linux" ? await serverlessChromium.executablePath() : undefined);
     if (!executablePath) throw new Error("PDF browser is not installed on the hosting server.");
-    browser = await chromium.launch({ headless: true, executablePath, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
+    const args = systemBrowser
+      ? ["--no-sandbox", "--disable-dev-shm-usage"]
+      : [...serverlessChromium.args, "--disable-dev-shm-usage"];
+    browser = await playwrightChromium.launch({ headless: true, executablePath, args });
     const page = await browser.newPage({ viewport: { width: 1240, height: 1754 } });
     await page.addInitScript((value: unknown) => {
       (window as typeof window & { __CATALOGUE_EXPORT__?: unknown }).__CATALOGUE_EXPORT__ = value as never;
