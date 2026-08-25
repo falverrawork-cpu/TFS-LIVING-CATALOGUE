@@ -21,6 +21,27 @@ export default function CataloguePrintPage() {
   const [catalogueCollections, setCatalogueCollections] = useState<Collection[]>(collections);
   const [ready, setReady] = useState(false);
   useEffect(() => {
+    const applyExport = (exported: ExportSettings) => {
+      if (exported.collections) setCatalogueCollections(exported.collections);
+      if (exported.layout) setLayout(exported.layout);
+      if (exported.media) setMedia(exported.media);
+      if (exported.highlights) setHighlightState(exported.highlights);
+      if (exported.pageOrder) setPageOrder(exported.pageOrder);
+      setReady(true);
+    };
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("source") === "opener" && window.opener) {
+      const receiveExport = (event: MessageEvent) => {
+        if (event.origin !== window.location.origin || event.source !== window.opener) return;
+        const message = event.data as { type?: string; payload?: ExportSettings } | null;
+        if (message?.type !== "tfs-catalogue-print-export" || !message.payload) return;
+        applyExport(message.payload);
+        window.removeEventListener("message", receiveExport);
+      };
+      window.addEventListener("message", receiveExport);
+      window.opener.postMessage({ type: "tfs-catalogue-print-ready" }, window.location.origin);
+      return () => window.removeEventListener("message", receiveExport);
+    }
     let exported = window.__CATALOGUE_EXPORT__;
     try {
       const stored = localStorage.getItem("tfs-catalogue-print-export");
@@ -32,12 +53,7 @@ export default function CataloguePrintPage() {
       localStorage.removeItem("tfs-catalogue-print-export");
     }
     if (exported) {
-      if (exported.collections) setCatalogueCollections(exported.collections);
-      if (exported.layout) setLayout(exported.layout);
-      if (exported.media) setMedia(exported.media);
-      if (exported.highlights) setHighlightState(exported.highlights);
-      if (exported.pageOrder) setPageOrder(exported.pageOrder);
-      setReady(true);
+      applyExport(exported);
       return;
     }
     try { const value = localStorage.getItem("tfs-catalogue-layout-presets"); if (value) setLayout(JSON.parse(value)); } catch {}

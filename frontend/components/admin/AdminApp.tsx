@@ -800,9 +800,17 @@ function Catalogues({ setTab, highlightState, collections }: { setTab: (s: strin
     setExporting(true);
     setExportError("");
     try {
-      localStorage.setItem("tfs-catalogue-print-export", JSON.stringify({ collections, layout: layoutState, media, highlights: highlightState, pageOrder }));
-      const printWindow = window.open("/catalogue/print?autoprint=1", "_blank");
+      const payload = { collections, layout: layoutState, media, highlights: highlightState, pageOrder };
+      const printWindow = window.open("/catalogue/print?autoprint=1&source=opener", "_blank");
       if (!printWindow) throw new Error("Allow pop-ups for this site, then try Export PDF again.");
+      const handleReady = (event: MessageEvent) => {
+        if (event.origin !== window.location.origin || event.source !== printWindow) return;
+        if ((event.data as { type?: string } | null)?.type !== "tfs-catalogue-print-ready") return;
+        printWindow.postMessage({ type: "tfs-catalogue-print-export", payload }, window.location.origin);
+        window.removeEventListener("message", handleReady);
+      };
+      window.addEventListener("message", handleReady);
+      window.setTimeout(() => window.removeEventListener("message", handleReady), 30000);
     } catch (error) {
       setExportError(error instanceof Error ? error.message : "PDF generation failed. Please try again.");
     } finally {
