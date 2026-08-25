@@ -1,4 +1,4 @@
-import { cpSync, existsSync, mkdirSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const projectRoot = process.cwd();
@@ -8,6 +8,8 @@ const appRoot = join(standaloneRoot, "frontend");
 if (!existsSync(join(appRoot, "server.js"))) {
   throw new Error("Next.js standalone server was not generated");
 }
+
+writeFileSync(join(standaloneRoot, "server.js"), 'require("./frontend/server.js");\n');
 
 const staticSource = join(projectRoot, ".next", "static");
 const staticTarget = join(appRoot, ".next", "static");
