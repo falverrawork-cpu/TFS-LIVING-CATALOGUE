@@ -3,6 +3,15 @@ import type { PageSpec, Product } from "@/types/catalogue";
 import type { TypographyPreset } from "@/lib/catalogue/typography";
 import { aboutDefaultStyles, toCss, toExactCss, toLogoCss, type ContentStyle } from "@/lib/catalogue/layout-presets";
 const money = (n: number) => `Rs. ${n.toLocaleString("en-IN")}/-`;
+const hasValue = (value: unknown) => value !== undefined && value !== null && value !== "" && Number(value) !== 0;
+const discountPercent = (mrp: number, trp?: number) => {
+  if (!hasValue(mrp) || !hasValue(trp) || trp! >= mrp) return null;
+  return Math.round(((mrp - trp!) / mrp) * 100);
+};
+const dimensionLine = (unit: "CM" | "INCH", length: number, width: number, height: number) => {
+  const values = [["L", length], ["W", width], ["H", height]].filter(([, value]) => hasValue(value));
+  return values.length ? `${unit} - ${values.map(([label, value]) => `${label} ${value}`).join(" × ")}` : null;
+};
 export function Logo({
   variant = "black",
   large = false,
@@ -35,19 +44,19 @@ export function ProductCard({
   p: Product;
   styles?: Record<string, ContentStyle>;
 }) {
+  const discount = discountPercent(p.price, p.trp);
+  const dimensions = [
+    dimensionLine("CM", p.lengthCm, p.widthCm, p.heightCm),
+    dimensionLine("INCH", p.lengthInch, p.widthInch, p.heightInch),
+  ].filter(Boolean);
   return (
     <div className="product-card">
-      <img src={p.primaryImage} alt={p.productName} />
-      <div className="pcode" style={toCss(styles.productId)}>
-        {p.productCode}
-      </div>
-      <h3 style={toCss(styles.productName)}>{p.productName}</h3>
-      <strong style={toCss(styles.price)}>{money(p.price)}</strong>
-      <div className="dims" style={toCss(styles.dimensions)}>
-        CM - L {p.lengthCm} × W {p.widthCm} × H {p.heightCm}
-        <br />
-        INCH - L {p.lengthInch} × W {p.widthInch} × H {p.heightInch}
-      </div>
+      {p.primaryImage && <div className="product-photo"><img src={p.primaryImage} alt={p.productName} />{discount !== null && <span className="discount-badge">{discount}% OFF</span>}</div>}
+      {p.productCode && <div className="pcode" style={toCss(styles.productId)}>{p.productCode}</div>}
+      {p.productName && <h3 style={toCss(styles.productName)}>{p.productName}</h3>}
+      {hasValue(p.price) && <strong className="mrp" style={toCss(styles.price)}>MRP: {money(p.price)}</strong>}
+      {hasValue(p.trp) && <strong className="trp" style={toCss(styles.price ? { ...styles.price, fontSize: styles.price.fontSize * .85 } : undefined)}>TRP: {money(p.trp!)}</strong>}
+      {dimensions.length > 0 && <div className="dims" style={toCss(styles.dimensions)}>{dimensions.map((line) => <div key={line}>{line}</div>)}</div>}
     </div>
   );
 }
@@ -180,34 +189,20 @@ export function CataloguePage({
       </div>
     );
   if (spec.type === "highlight" && spec.product)
-    return (
+    { const dimensions = [dimensionLine("CM", spec.product.lengthCm, spec.product.widthCm, spec.product.heightCm), dimensionLine("INCH", spec.product.lengthInch, spec.product.widthInch, spec.product.heightInch)].filter(Boolean); const priceStyle = contentStyles.price ?? { ...aboutDefaultStyles.pageTitle, fontSize: 67, fontWeight: 700 }; return (
       <div className="page highlight" style={pageStyle}>
-        <img
-          className="highlight-bg"
-          src={spec.product.highlightImage || spec.product.primaryImage}
-        />
+        {(spec.product.highlightImage || spec.product.primaryImage) && <img className="highlight-bg" src={spec.product.highlightImage || spec.product.primaryImage} />}
         <Logo variant="white" />
-        <div className="highlight-id" style={toExactCss(contentStyles.productId ?? { ...aboutDefaultStyles.pageTitle, fontSize: 36, fontWeight: 400 })}>
-          {spec.product.productCode}
-        </div>
+        {spec.product.productCode && <div className="highlight-id" style={toExactCss(contentStyles.productId ?? { ...aboutDefaultStyles.pageTitle, fontSize: 35, fontWeight: 400 })}>{spec.product.productCode}</div>}
         <div className="highlight-copy">
-          <h2 style={toExactCss(contentStyles.productName ?? { ...aboutDefaultStyles.pageTitle, fontSize: 68, fontWeight: 700 })}>
-            {spec.product.productName}
-          </h2>
-          <strong style={toExactCss(contentStyles.price ?? { ...aboutDefaultStyles.pageTitle, fontSize: 68, fontWeight: 700 })}>
-            {money(spec.product.price)}
-          </strong>
-          <div className="dims" style={toExactCss(contentStyles.dimensions ?? { ...aboutDefaultStyles.pageTitle, fontSize: 30, fontWeight: 400 })}>
-            CM - L {spec.product.lengthCm} × W {spec.product.widthCm} × H{" "}
-            {spec.product.heightCm}
-            <br />
-            INCH - L {spec.product.lengthInch} × W {spec.product.widthInch} × H{" "}
-            {spec.product.heightInch}
-          </div>
+          {spec.product.productName && <h2 style={toExactCss(contentStyles.productName ?? { ...aboutDefaultStyles.pageTitle, fontSize: 67, fontWeight: 700 })}>{spec.product.productName}</h2>}
+          {hasValue(spec.product.price) && <strong className="mrp" style={toExactCss(priceStyle)}>MRP: {money(spec.product.price)}</strong>}
+          {hasValue(spec.product.trp) && <strong className="trp" style={toExactCss({ ...priceStyle, fontSize: priceStyle.fontSize * .85 })}>TRP: {money(spec.product.trp!)}</strong>}
+          {dimensions.length > 0 && <div className="dims" style={toExactCss(contentStyles.dimensions ?? { ...aboutDefaultStyles.pageTitle, fontSize: 29, fontWeight: 400 })}>{dimensions.map((line) => <div key={line}>{line}</div>)}</div>}
         </div>
         <Folio page={spec.page} totalPages={totalPages} />
       </div>
-    );
+    ); }
   if (spec.type === "back-cover")
     return (
       <div className="page back" style={pageStyle}>

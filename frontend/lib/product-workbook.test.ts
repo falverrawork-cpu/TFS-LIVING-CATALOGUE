@@ -18,4 +18,18 @@ describe("product workbook import", () => {
     expect(result.collections[0].name).toBe("Summer Chairs");
     expect(result.collections[0].products).toHaveLength(2);
   });
+
+  it("imports MRP and TRP values", async () => {
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet([
+      { "Product ID": "NEW-003", "Product Name": "Third chair", Collection: "Summer Chairs", "MRP (INR)": 25000, "TRP (INR)": 22000 },
+    ]), "Products");
+    const bytes = XLSX.write(workbook, { type: "array", bookType: "xlsx" });
+    const file = new File([bytes], "products.xlsx", { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+
+    const result = await importProductWorkbook(file, []);
+
+    expect(result.products[0].product.price).toBe(25000);
+    expect(result.products[0].product.trp).toBe(22000);
+  });
 });

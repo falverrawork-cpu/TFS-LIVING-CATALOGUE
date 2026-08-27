@@ -364,7 +364,7 @@ function Products({ collections, onChange }: { collections: Collection[]; onChan
               <th>ID</th>
               <th>Collection</th>
               <th>Rank</th>
-              <th>Price</th>
+              <th>MRP / TRP</th>
               <th>Dimensions</th>
               <th>Status</th>
               <th>Actions</th>
@@ -382,7 +382,7 @@ function Products({ collections, onChange }: { collections: Collection[]; onChan
                 <td className="code">{p.productCode}</td>
                 <td>{p.collectionName}</td>
                 <td><span className="rank-badge">{p.displayOrder}</span></td>
-                <td>₹{p.price.toLocaleString("en-IN")}</td>
+                <td>{p.price > 0 && <div>MRP ₹{p.price.toLocaleString("en-IN")}</div>}{(p.trp ?? 0) > 0 && <div>TRP ₹{p.trp!.toLocaleString("en-IN")}</div>}</td>
                 <td>
                   {p.lengthCm} × {p.widthCm} × {p.heightCm} cm
                 </td>
@@ -412,7 +412,8 @@ function Products({ collections, onChange }: { collections: Collection[]; onChan
               <label><span>Product ID</span><input value={editing.productCode} onChange={(event) => setEditing({ ...editing, productCode: event.target.value })} /></label>
               <label><span>Collection</span><select value={editing.collectionId} onChange={(event) => { const collection = collections.find((item) => item.id === event.target.value); if (collection) setEditing({ ...editing, collectionId: collection.id, collectionName: collection.name, displayOrder: collection.products.length + 1 }); }}>{collections.map((collection) => <option key={collection.id} value={collection.id}>{collection.name}</option>)}</select></label>
               <label><span>Rank in collection (1–{rankingLimit})</span><input type="number" min={1} max={rankingLimit} value={editing.displayOrder} onChange={(event) => setEditing({ ...editing, displayOrder: Number(event.target.value) })} /></label>
-              <label><span>Price (INR)</span><input type="number" min={0} value={editing.price} onChange={(event) => setEditing({ ...editing, price: Number(event.target.value) })} /></label>
+              <label><span>MRP (INR)</span><input type="number" min={0} value={editing.price || ""} onChange={(event) => setEditing({ ...editing, price: Number(event.target.value) })} /></label>
+              <label><span>TRP (INR)</span><input type="number" min={0} value={editing.trp || ""} onChange={(event) => setEditing({ ...editing, trp: Number(event.target.value) })} /></label>
               <label className="wide"><span>Primary image URL</span><input value={editing.primaryImage} onChange={(event) => setEditing({ ...editing, primaryImage: event.target.value })} /></label>
               <label><span>Length (cm)</span><input type="number" min={0} value={editing.lengthCm} onChange={(event) => setEditing({ ...editing, lengthCm: Number(event.target.value) })} /></label>
               <label><span>Width (cm)</span><input type="number" min={0} value={editing.widthCm} onChange={(event) => setEditing({ ...editing, widthCm: Number(event.target.value) })} /></label>

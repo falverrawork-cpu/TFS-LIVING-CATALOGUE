@@ -2,7 +2,7 @@ import * as XLSX from "xlsx";
 import type { Collection, Product } from "@/types/catalogue";
 
 export const workbookColumns = [
-  "Product ID", "Product Name", "Collection", "Price (INR)",
+  "Product ID", "Product Name", "Collection", "MRP (INR)", "TRP (INR)",
   "Length (cm)", "Width (cm)", "Height (cm)",
   "Length (inch)", "Width (inch)", "Height (inch)",
   "Primary Image URL", "Highlight Image URL", "Display Order", "Active", "Show in Product Grid",
@@ -29,7 +29,7 @@ const slug = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, "-").
 export function downloadProductTemplate() {
   const example = {
     "Product ID": "TFSL-NEW-001", "Product Name": "New Product Name", Collection: "New Arrivals",
-    "Price (INR)": 24999, "Length (cm)": 74, "Width (cm)": 66, "Height (cm)": 76,
+    "MRP (INR)": 24999, "TRP (INR)": 21999, "Length (cm)": 74, "Width (cm)": 66, "Height (cm)": 76,
     "Length (inch)": 29, "Width (inch)": 26, "Height (inch)": 30,
     "Primary Image URL": "", "Highlight Image URL": "", "Display Order": 1,
     Active: "Yes", "Show in Product Grid": "Yes",
@@ -92,7 +92,8 @@ export async function importProductWorkbook(file: File, current: Collection[]): 
     const highlightImage = text(row["Highlight Image URL"]);
     const values: Omit<Product, "id"> = {
       productCode, productName, collectionId: collection.id, collectionName,
-      price: numberValue(row["Price (INR)"]), lengthCm: numberValue(row["Length (cm)"]),
+      price: numberValue(row["MRP (INR)"] ?? row["Price (INR)"]), trp: numberValue(row["TRP (INR)"]),
+      lengthCm: numberValue(row["Length (cm)"]),
       widthCm: numberValue(row["Width (cm)"]), heightCm: numberValue(row["Height (cm)"]),
       lengthInch: numberValue(row["Length (inch)"]), widthInch: numberValue(row["Width (inch)"]),
       heightInch: numberValue(row["Height (inch)"]),
