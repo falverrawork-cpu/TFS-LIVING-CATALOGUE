@@ -54,8 +54,8 @@ export function ProductCard({
       {p.primaryImage && <div className="product-photo"><img src={p.primaryImage} alt={p.productName} />{discount !== null && <span className="discount-badge">{discount}% OFF</span>}</div>}
       {p.productCode && <div className="pcode" style={toCss(styles.productId)}>{p.productCode}</div>}
       {p.productName && <h3 style={toCss(styles.productName)}>{p.productName}</h3>}
-      {hasValue(p.price) && <strong className="mrp" style={toCss(styles.price)}>MRP: {money(p.price)}</strong>}
-      {hasValue(p.trp) && <strong className="trp" style={toCss(styles.price ? { ...styles.price, fontSize: styles.price.fontSize * .85 } : undefined)}>TRP: {money(p.trp!)}</strong>}
+      {hasValue(p.trp) && <strong className="trp" style={{ ...toCss(styles.price ? { ...styles.price, fontSize: styles.price.fontSize * 1.1, fontWeight: 800 } : undefined), fontWeight: 800 }}>Our Price: {money(p.trp!)}</strong>}
+      {hasValue(p.price) && <strong className="mrp" style={{ ...toCss(styles.price ? { ...styles.price, fontSize: styles.price.fontSize * .72, fontWeight: 400 } : undefined), color: "#777", fontWeight: 400 }}>MRP: {money(p.price)}</strong>}
       {dimensions.length > 0 && <div className="dims" style={toCss(styles.dimensions)}>{dimensions.map((line) => <div key={line}>{line}</div>)}</div>}
     </div>
   );
@@ -146,13 +146,6 @@ export function CataloguePage({
             US
           </h2>
           <h3 style={toExactCss(aboutStyles.brandTitle)}>TFS LIVING</h3>
-          <p style={toExactCss(aboutStyles.description)}>
-            Through TFS Living, we offer premium furniture pieces that
-            combine European-inspired modern design with the unparalleled
-            quality of Indian craftsmanship. Whether it is for your living room,
-            dining area, or bedroom, each piece is a testament to our commitment
-            to excellence and craftsmanship.
-          </p>
         </div>
         <Folio page={spec.page} totalPages={totalPages} />
       </div>
@@ -196,8 +189,8 @@ export function CataloguePage({
         {spec.product.productCode && <div className="highlight-id" style={toExactCss(contentStyles.productId ?? { ...aboutDefaultStyles.pageTitle, fontSize: 35, fontWeight: 400 })}>{spec.product.productCode}</div>}
         <div className="highlight-copy">
           {spec.product.productName && <h2 style={toExactCss(contentStyles.productName ?? { ...aboutDefaultStyles.pageTitle, fontSize: 67, fontWeight: 700 })}>{spec.product.productName}</h2>}
-          {hasValue(spec.product.price) && <strong className="mrp" style={toExactCss(priceStyle)}>MRP: {money(spec.product.price)}</strong>}
-          {hasValue(spec.product.trp) && <strong className="trp" style={toExactCss({ ...priceStyle, fontSize: priceStyle.fontSize * .85 })}>TRP: {money(spec.product.trp!)}</strong>}
+          {hasValue(spec.product.trp) && <strong className="trp" style={{ ...toExactCss({ ...priceStyle, fontSize: priceStyle.fontSize * 1.1, fontWeight: 800 }), fontWeight: 800 }}>Our Price: {money(spec.product.trp!)}</strong>}
+          {hasValue(spec.product.price) && <strong className="mrp" style={{ ...toExactCss({ ...priceStyle, fontSize: priceStyle.fontSize * .72, fontWeight: 400 }), color: "#d0d0d0", fontWeight: 400 }}>MRP: {money(spec.product.price)}</strong>}
           {dimensions.length > 0 && <div className="dims" style={toExactCss(contentStyles.dimensions ?? { ...aboutDefaultStyles.pageTitle, fontSize: 29, fontWeight: 400 })}>{dimensions.map((line) => <div key={line}>{line}</div>)}</div>}
         </div>
         <Folio page={spec.page} totalPages={totalPages} />
@@ -220,31 +213,15 @@ export function CataloguePage({
           </div>
           <div className="back-details">
             <p style={toCss(contentStyles.companyDetails)}>
-            KHEMCHAND HANDICRAFTS LIMITED
+            TFS LIVING
             <br />
-            TFS Living Studio, Jodhpur, Rajasthan, India
+            Shop No. 16–20, 2nd Floor, Home Square
+            <br />
+            Salugara, Sevoke Road, Siliguri, West Bengal.
             </p>
-            <div className="contacts" style={toCss(contentStyles.contactDetails)}>
+            <div className="contacts contacts-single" style={toCss(contentStyles.contactDetails)}>
             <div>
-              For Collaboration/Partnership
-              <br />
-              collab@tfsliving.com
-              <br />
-              +91 98765 43210
-            </div>
-            <div>
-              For Projects/Bulk Order
-              <br />
-              projects@tfsliving.com
-              <br />
-              +91 98765 43211
-            </div>
-            <div>
-              For Customer Service
-              <br />
-              care@tfsliving.com
-              <br />
-              +91 98765 43212
+              Phone No: 8001156000
             </div>
             </div>
           </div>
