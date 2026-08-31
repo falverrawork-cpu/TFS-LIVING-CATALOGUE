@@ -13,10 +13,10 @@ if (!existsSync(join(openNextRoot, "worker.js"))) {
 
 rmSync(deploymentRoot, { recursive: true, force: true });
 mkdirSync(serverRoot, { recursive: true });
-cpSync(openNextRoot, serverRoot, { recursive: true });
+cpSync(openNextRoot, serverRoot, { recursive: true, dereference: true });
 renameSync(join(serverRoot, "worker.js"), join(serverRoot, "index.js"));
 
 const assetsRoot = join(openNextRoot, "assets");
 if (existsSync(assetsRoot)) {
-  cpSync(assetsRoot, join(deploymentRoot, "assets"), { recursive: true });
+  cpSync(assetsRoot, join(deploymentRoot, "assets"), { recursive: true, dereference: true });
 }
