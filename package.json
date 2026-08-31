@@ -10,7 +10,7 @@
     "dev": "pnpm --parallel --filter ./frontend --filter ./backend dev",
     "dev:frontend": "pnpm --dir frontend dev",
     "dev:backend": "pnpm --dir backend dev",
-    "build": "pnpm --recursive build",
+    "build": "npm --prefix frontend run build",
     "test": "pnpm --recursive test",
     "typecheck": "pnpm --recursive typecheck",
     "hosting:check": "pnpm --dir frontend build"
