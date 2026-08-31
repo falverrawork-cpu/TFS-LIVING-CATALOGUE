@@ -818,6 +818,7 @@ function Catalogues({ setTab, highlightState, collections }: { setTab: (s: strin
       const pages = Array.from(exportRoot.querySelectorAll<HTMLElement>(".page"));
       if (!pages.length) throw new Error("No catalogue pages were found.");
       exportRoot.style.visibility = "visible";
+      exportRoot.classList.add("pdf-export");
       const monochromeLogos = Array.from(exportRoot.querySelectorAll<HTMLImageElement>(".brand-logo-monochrome img"));
       const originalLogoSources = monochromeLogos.map((logo) => logo.getAttribute("src") ?? "");
       if (monochromeLogos.length) {
@@ -850,6 +851,7 @@ function Catalogues({ setTab, highlightState, collections }: { setTab: (s: strin
         }
       } finally {
         monochromeLogos.forEach((logo, index) => { logo.src = originalLogoSources[index]; });
+        exportRoot.classList.remove("pdf-export");
         exportRoot.style.visibility = "";
       }
       pdf.save("TFS-Living-Catalogue-2026.pdf");

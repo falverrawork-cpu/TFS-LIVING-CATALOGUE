@@ -51,7 +51,7 @@ export function ProductCard({
   ].filter(Boolean);
   return (
     <div className="product-card">
-      {p.primaryImage && <div className="product-photo"><img src={p.primaryImage} alt={p.productName} />{discount !== null && <span className="discount-badge">{discount}% OFF</span>}</div>}
+      {p.primaryImage && <div className="product-photo"><img src={p.primaryImage} alt={p.productName} />{discount !== null && <span className="discount-badge"><span>{discount}% OFF</span></span>}</div>}
       {p.productCode && <div className="pcode" style={toCss(styles.productId)}>{p.productCode}</div>}
       {p.productName && <h3 style={toCss(styles.productName)}>{p.productName}</h3>}
       {hasValue(p.trp) && <strong className="trp" style={{ ...toCss(styles.price ? { ...styles.price, fontSize: styles.price.fontSize * 1.1, fontWeight: 800 } : undefined), fontWeight: 800 }}>Our Price: {money(p.trp!)}</strong>}
