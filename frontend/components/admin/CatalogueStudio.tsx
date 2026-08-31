@@ -767,7 +767,12 @@ function Catalogues({ setTab, highlightState, collections }: { setTab: (s: strin
     [collections, highlightState],
   );
   const [pageOrder, setPageOrder] = useState<string[]>([]);
-  const manifest = useMemo(() => orderCatalogueManifest(baseManifest, pageOrder), [baseManifest, pageOrder]);
+  const [deletedPageKeys, setDeletedPageKeys] = useState<string[]>([]);
+  const availableManifest = useMemo(() => {
+    const deleted = new Set(deletedPageKeys);
+    return baseManifest.filter((item) => !deleted.has(cataloguePageKey(item)));
+  }, [baseManifest, deletedPageKeys]);
+  const manifest = useMemo(() => orderCatalogueManifest(availableManifest, pageOrder), [availableManifest, pageOrder]);
   const [page, setPage] = useState(1);
   const [layoutState, setLayoutState] =
     useState<LayoutPresetState>(defaultLayoutState);
@@ -788,7 +793,9 @@ function Catalogues({ setTab, highlightState, collections }: { setTab: (s: strin
         localStorage.removeItem("tfs-catalogue-media");
       }
     try { const savedOrder = localStorage.getItem("tfs-catalogue-page-order"); if (savedOrder) setPageOrder(JSON.parse(savedOrder)); } catch { localStorage.removeItem("tfs-catalogue-page-order"); }
+    try { const savedDeleted = localStorage.getItem("tfs-catalogue-deleted-pages"); if (savedDeleted) setDeletedPageKeys(JSON.parse(savedDeleted)); } catch { localStorage.removeItem("tfs-catalogue-deleted-pages"); }
   }, []);
+  useEffect(() => { setPage((current) => Math.max(1, Math.min(current, Math.max(manifest.length, 1)))); }, [manifest.length]);
   const movePage = (index: number, direction: -1 | 1) => {
     const target = index + direction;
     if (target < 0 || target >= manifest.length) return;
@@ -796,6 +803,21 @@ function Catalogues({ setTab, highlightState, collections }: { setTab: (s: strin
     [next[index], next[target]] = [next[target], next[index]];
     setPageOrder(next);
     localStorage.setItem("tfs-catalogue-page-order", JSON.stringify(next));
+  };
+  const deletePage = (item: PageSpec) => {
+    const label = item.title ? `${item.type.replace("-", " ")} — ${item.title}` : item.type.replace("-", " ");
+    if (!window.confirm(`Delete page ${item.page}: ${label}?`)) return;
+    const key = cataloguePageKey(item);
+    const nextDeleted = Array.from(new Set([...deletedPageKeys, key]));
+    const nextOrder = pageOrder.filter((orderedKey) => orderedKey !== key);
+    setDeletedPageKeys(nextDeleted);
+    setPageOrder(nextOrder);
+    localStorage.setItem("tfs-catalogue-deleted-pages", JSON.stringify(nextDeleted));
+    localStorage.setItem("tfs-catalogue-page-order", JSON.stringify(nextOrder));
+  };
+  const restoreDeletedPages = () => {
+    setDeletedPageKeys([]);
+    localStorage.removeItem("tfs-catalogue-deleted-pages");
   };
   const downloadCatalogue = async () => {
     setExporting(true);
@@ -968,7 +990,7 @@ function Catalogues({ setTab, highlightState, collections }: { setTab: (s: strin
             <SlidersHorizontal size={15} />
             Configure
           </button>
-          <button className="btn primary" onClick={() => setPreview(true)}>
+          <button className="btn primary" onClick={() => setPreview(true)} disabled={manifest.length === 0}>
             <BookOpen size={15} />
             Preview
           </button>
@@ -999,7 +1021,11 @@ function Catalogues({ setTab, highlightState, collections }: { setTab: (s: strin
         </>
       )}
       <div className="panel">
-        <h2>Generated page plan</h2>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+          <h2>Generated page plan</h2>
+          {deletedPageKeys.length > 0 && <button className="btn" onClick={restoreDeletedPages}>Restore deleted pages</button>}
+        </div>
+        {manifest.length === 0 && <p style={{ color: "#777" }}>All catalogue pages have been deleted. Restore them to continue.</p>}
         {manifest.map((p, index) => (
           <div
             key={p.page}
@@ -1020,6 +1046,7 @@ function Catalogues({ setTab, highlightState, collections }: { setTab: (s: strin
               <button className="btn" aria-label={`Move page ${p.page} up`} disabled={index === 0} onClick={() => movePage(index, -1)} style={{ padding: "4px 9px" }}>↑</button>
               <button className="btn" aria-label={`Move page ${p.page} down`} disabled={index === manifest.length - 1} onClick={() => movePage(index, 1)} style={{ padding: "4px 9px" }}>↓</button>
             </div>
+            <button className="icon-btn danger" aria-label={`Delete page ${p.page}`} onClick={() => deletePage(p)}><Trash2 size={15} /></button>
           </div>
         ))}
       </div>
