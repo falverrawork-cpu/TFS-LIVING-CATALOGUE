@@ -10,7 +10,7 @@
 .back-orange{padding-top:38mm}.back-details{transform:translateY(30mm)}.back-details>p{font-size:calc(10px * var(--type-scale));line-height:1.3;margin-top:9mm;margin-bottom:9mm}.back-orange .contacts{font-size:calc(7px * var(--type-scale))!important;line-height:1.35}.back .brand-logo img{filter:brightness(0) invert(1)}
 body,button,input,select,textarea,.page,.page *{font-family:var(--font-montserrat),Montserrat,sans-serif}
 .cover .year{display:block;width:max-content;margin-left:auto;margin-right:0;text-align:right}
-.about-top p{width:94%;line-height:1.42}
+.about-top p{width:94%;line-height:1.42;color:#fff}
 .collection-top h2{line-height:.96}
 .product-card{width:90%;margin-inline:auto}.product-card .pcode{font-size:calc(7px * var(--type-scale));font-weight:500}.product-card h3{font-size:calc(10.5px * var(--type-scale));font-weight:600}.product-card strong{display:block;line-height:1.3}.product-card strong.trp{font-size:calc(10.5px * var(--type-scale));font-weight:800;color:#171717}.product-card strong.mrp{font-size:calc(7px * var(--type-scale));font-weight:400;color:#777}.product-card .dims{font-size:calc(7px * var(--type-scale));line-height:1.55}
 .product-photo{position:relative}.product-photo .discount-badge{position:absolute;z-index:1;top:1.2mm;right:1.8mm;padding:1.35mm 2mm;border-radius:99px;background:var(--orange);color:#fff;font-size:calc(5.5px * var(--type-scale));font-weight:800;line-height:1;letter-spacing:.03em;box-shadow:0 1mm 3mm #0002}
