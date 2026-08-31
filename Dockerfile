@@ -12,7 +12,7 @@ RUN pnpm install --frozen-lockfile
 
 FROM dependencies AS build
 COPY frontend frontend
-RUN pnpm --dir frontend build:standalone
+RUN pnpm --dir frontend build
 
 FROM node:22-bookworm-slim AS runtime
 WORKDIR /app
