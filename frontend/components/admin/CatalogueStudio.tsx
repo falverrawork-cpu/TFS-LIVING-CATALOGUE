@@ -818,6 +818,24 @@ function Catalogues({ setTab, highlightState, collections }: { setTab: (s: strin
       const pages = Array.from(exportRoot.querySelectorAll<HTMLElement>(".page"));
       if (!pages.length) throw new Error("No catalogue pages were found.");
       exportRoot.style.visibility = "visible";
+      const monochromeLogos = Array.from(exportRoot.querySelectorAll<HTMLImageElement>(".brand-logo-monochrome img"));
+      const originalLogoSources = monochromeLogos.map((logo) => logo.getAttribute("src") ?? "");
+      if (monochromeLogos.length) {
+        const source = monochromeLogos[0];
+        const canvas = document.createElement("canvas");
+        canvas.width = source.naturalWidth;
+        canvas.height = source.naturalHeight;
+        const context = canvas.getContext("2d");
+        if (context && canvas.width && canvas.height) {
+          context.drawImage(source, 0, 0);
+          context.globalCompositeOperation = "source-in";
+          context.fillStyle = "#ffffff";
+          context.fillRect(0, 0, canvas.width, canvas.height);
+          const whiteLogo = canvas.toDataURL("image/png");
+          monochromeLogos.forEach((logo) => { logo.src = whiteLogo; });
+          await Promise.all(monochromeLogos.map((logo) => logo.decode().catch(() => undefined)));
+        }
+      }
       const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4", compress: true });
       try {
         for (let index = 0; index < pages.length; index += 1) {
@@ -831,6 +849,7 @@ function Catalogues({ setTab, highlightState, collections }: { setTab: (s: strin
           pdf.addImage(canvas.toDataURL("image/jpeg", 0.92), "JPEG", 0, 0, 210, 297, `page-${index + 1}`, "FAST");
         }
       } finally {
+        monochromeLogos.forEach((logo, index) => { logo.src = originalLogoSources[index]; });
         exportRoot.style.visibility = "";
       }
       pdf.save("TFS-Living-Catalogue-2026.pdf");
