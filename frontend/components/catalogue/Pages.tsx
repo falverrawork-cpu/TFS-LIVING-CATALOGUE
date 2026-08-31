@@ -55,7 +55,7 @@ export function ProductCard({
       {p.productCode && <div className="pcode" style={toCss(styles.productId)}>{p.productCode}</div>}
       {p.productName && <h3 style={toCss(styles.productName)}>{p.productName}</h3>}
       {hasValue(p.trp) && <strong className="trp" style={{ ...toCss(styles.price ? { ...styles.price, fontSize: styles.price.fontSize * 1.1, fontWeight: 800 } : undefined), fontWeight: 800 }}>Our Price: {money(p.trp!)}</strong>}
-      {hasValue(p.price) && <strong className="mrp" style={{ ...toCss(styles.price ? { ...styles.price, fontSize: styles.price.fontSize * .78, fontWeight: 400 } : undefined), color: "#777", fontWeight: 400 }}>MRP: <span className="mrp-price">{money(p.price)}</span></strong>}
+      {hasValue(p.price) && <strong className="mrp" style={{ ...toCss(styles.price ? { ...styles.price, fontSize: styles.price.fontSize * .78, fontWeight: 400 } : undefined), color: "#777", fontWeight: 400 }}>MRP: <s>{money(p.price)}</s></strong>}
       {dimensions.length > 0 && <div className="dims" style={toCss(styles.dimensions)}>{dimensions.map((line) => <div key={line}>{line}</div>)}</div>}
     </div>
   );
@@ -193,7 +193,7 @@ export function CataloguePage({
         <div className="highlight-copy">
           {spec.product.productName && <h2 style={toExactCss(contentStyles.productName ?? { ...aboutDefaultStyles.pageTitle, fontSize: 67, fontWeight: 700 })}>{spec.product.productName}</h2>}
           {hasValue(spec.product.trp) && <strong className="trp" style={{ ...toExactCss({ ...priceStyle, fontSize: priceStyle.fontSize * 1.1, fontWeight: 800 }), fontWeight: 800 }}>Our Price: {money(spec.product.trp!)}</strong>}
-          {hasValue(spec.product.price) && <strong className="mrp" style={{ ...toExactCss({ ...priceStyle, fontSize: priceStyle.fontSize * .78, fontWeight: 400 }), color: "#d0d0d0", fontWeight: 400 }}>MRP: <span className="mrp-price">{money(spec.product.price)}</span></strong>}
+          {hasValue(spec.product.price) && <strong className="mrp" style={{ ...toExactCss({ ...priceStyle, fontSize: priceStyle.fontSize * .78, fontWeight: 400 }), color: "#d0d0d0", fontWeight: 400 }}>MRP: <s>{money(spec.product.price)}</s></strong>}
           {dimensions.length > 0 && <div className="dims" style={toExactCss(contentStyles.dimensions ?? { ...aboutDefaultStyles.pageTitle, fontSize: 29, fontWeight: 400 })}>{dimensions.map((line) => <div key={line}>{line}</div>)}</div>}
         </div>
         <Folio page={spec.page} totalPages={totalPages} />
