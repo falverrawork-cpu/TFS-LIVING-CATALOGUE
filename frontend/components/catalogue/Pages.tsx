@@ -147,17 +147,7 @@ export function CataloguePage({
           </h2>
           <h3 style={toExactCss(aboutStyles.brandTitle)}>TFS LIVING</h3>
           <p className="about-description" style={{ ...toExactCss(aboutStyles.description), color: "#ffffff" }}>
-            At TFS Living, we believe furniture gives every space its character and comfort.
-            <br />
-            Our curated collection combines style, quality, functionality, and timeless design.
-            <br />
-            From sofas and beds to dining tables, chairs, and accent furniture, every piece is thoughtfully selected.
-            <br />
-            We create furniture that complements modern lifestyles and reflects individual personalities.
-            <br />
-            Our aim is to make every home feel beautiful, comfortable, and truly personal.
-            <br />
-            TFS Living — Designed for Living. Made to Belong.
+            At TFS Living, we believe furniture gives every space its character and comfort. Our curated collection combines style, quality, functionality, and timeless design. From sofas and beds to dining tables, chairs, and accent furniture, every piece is thoughtfully selected. We create furniture that complements modern lifestyles and reflects individual personalities. Our aim is to make every home feel beautiful, comfortable, and truly personal. TFS Living — Designed for Living. Made to Belong.
           </p>
         </div>
         <Folio page={spec.page} totalPages={totalPages} />
