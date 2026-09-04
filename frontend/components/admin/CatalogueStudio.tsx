@@ -900,7 +900,7 @@ function Catalogues({ setTab, highlightState, collections }: { setTab: (s: strin
           </button>
           {manifest.map((p) => (
             <div
-              key={p.page}
+              key={cataloguePageKey(p)}
               className={`thumb ${page === p.page ? "active" : ""}`}
               onClick={() => setPage(p.page)}
             >
@@ -941,6 +941,7 @@ function Catalogues({ setTab, highlightState, collections }: { setTab: (s: strin
           </div>
           {exportError && <div className="export-error">{exportError}</div>}
           <CataloguePage
+            key={cataloguePageKey(spec)}
             spec={spec}
             totalPages={manifest.length}
             contentStyles={preset?.styles}
@@ -952,7 +953,7 @@ function Catalogues({ setTab, highlightState, collections }: { setTab: (s: strin
       <main className="in-page-print" aria-hidden="true">
         {manifest.map((printSpec) => (
           <CataloguePage
-            key={printSpec.page}
+            key={cataloguePageKey(printSpec)}
             spec={printSpec}
             totalPages={manifest.length}
             contentStyles={presetForPage(layoutState, printSpec.page)?.styles}
@@ -1028,7 +1029,7 @@ function Catalogues({ setTab, highlightState, collections }: { setTab: (s: strin
         {manifest.length === 0 && <p style={{ color: "#777" }}>All catalogue pages have been deleted. Restore them to continue.</p>}
         {manifest.map((p, index) => (
           <div
-            key={p.page}
+            key={cataloguePageKey(p)}
             style={{
               display: "flex",
               alignItems: "center",
@@ -1182,7 +1183,7 @@ function PageLayoutEditor({
             onChange={(e) => selectPage(Number(e.target.value))}
           >
             {manifest.map((p) => (
-              <option key={p.page} value={p.page}>
+              <option key={cataloguePageKey(p)} value={p.page}>
                 Page {p.page} · {p.type.replaceAll("-", " ")}
                 {p.title ? ` · ${p.title}` : ""}
               </option>
@@ -1243,7 +1244,7 @@ function PageLayoutEditor({
           </div>}
         </div>
         <div className="live-page">
-          <CataloguePage spec={spec} totalPages={manifest.length} contentStyles={preset.styles} />
+          <CataloguePage key={cataloguePageKey(spec)} spec={spec} totalPages={manifest.length} contentStyles={preset.styles} />
         </div>
         <div className="property-panel">
           <h3>{option?.label}</h3>
@@ -1286,7 +1287,7 @@ function PageLayoutEditor({
         <h3>Apply preset to pages</h3>
         <div>
           {manifest.map((p) => (
-            <label key={p.page}>
+            <label key={cataloguePageKey(p)}>
               <input
                 type="checkbox"
                 checked={preset.pageNumbers.includes(p.page)}
