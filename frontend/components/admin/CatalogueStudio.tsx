@@ -831,8 +831,6 @@ function Catalogues({ setTab, highlightState, collections }: { setTab: (s: strin
           image.addEventListener("error", () => resolve(), { once: true });
         }),
       ));
-      await document.fonts.ready;
-      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
       const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
         import("html2canvas"),
         import("jspdf"),
@@ -841,6 +839,8 @@ function Catalogues({ setTab, highlightState, collections }: { setTab: (s: strin
       if (!pages.length) throw new Error("No catalogue pages were found.");
       exportRoot.style.visibility = "visible";
       exportRoot.classList.add("pdf-export");
+      await document.fonts.ready;
+      await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
       const monochromeLogos = Array.from(exportRoot.querySelectorAll<HTMLImageElement>(".brand-logo-monochrome img"));
       const originalLogoSources = monochromeLogos.map((logo) => logo.getAttribute("src") ?? "");
       if (monochromeLogos.length) {
@@ -857,6 +857,7 @@ function Catalogues({ setTab, highlightState, collections }: { setTab: (s: strin
           const whiteLogo = canvas.toDataURL("image/png");
           monochromeLogos.forEach((logo) => { logo.src = whiteLogo; });
           await Promise.all(monochromeLogos.map((logo) => logo.decode().catch(() => undefined)));
+          await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
         }
       }
       const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4", compress: true });
