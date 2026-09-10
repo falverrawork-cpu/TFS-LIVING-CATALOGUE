@@ -28,6 +28,7 @@ import { matchProductForImage } from "@/lib/image-matching";
 import { buildCatalogueManifest, cataloguePageKey, orderCatalogueManifest } from "@/lib/catalogue/manifest";
 import { CataloguePage } from "@/components/catalogue/Pages";
 import {
+  assignPresetToPage,
   contentOptions,
   defaultLayoutState,
   initialStyle,
@@ -1087,9 +1088,9 @@ function PageLayoutEditor({
     if (assigned) setPresetId(assigned.id);
   };
   const updateStyle = (field: NumericContentStyleKey, value: number) =>
-    setState({
-      ...state,
-      presets: state.presets.map((p) =>
+    setState((current) => assignPresetToPage({
+      ...current,
+      presets: current.presets.map((p) =>
         p.id === preset.id
           ? {
               ...p,
@@ -1100,14 +1101,14 @@ function PageLayoutEditor({
             }
           : p,
       ),
-    });
+    }, preset.id, page));
   const alignHighlightNameAndPrice = (textAlign: "left" | "right") => {
     const productName = preset.styles.productName ?? initialStyle("highlight", "productName");
     const price = preset.styles.price ?? initialStyle("highlight", "price");
     const dimensions = preset.styles.dimensions ?? initialStyle("highlight", "dimensions");
-    setState({
-      ...state,
-      presets: state.presets.map((p) => p.id === preset.id ? {
+    setState((current) => assignPresetToPage({
+      ...current,
+      presets: current.presets.map((p) => p.id === preset.id ? {
         ...p,
         styles: {
           ...p.styles,
@@ -1116,16 +1117,16 @@ function PageLayoutEditor({
           dimensions: { ...dimensions, textAlign },
         },
       } : p),
-    });
+    }, preset.id, page));
   };
   const moveHighlightNameAndPrice = (amount: number) => {
     const productName = preset.styles.productName ?? initialStyle("highlight", "productName");
     const price = preset.styles.price ?? initialStyle("highlight", "price");
     const currentOffset = productName.translateY ?? price.translateY ?? 0;
     const translateY = currentOffset + amount;
-    setState({
-      ...state,
-      presets: state.presets.map((p) => p.id === preset.id ? {
+    setState((current) => assignPresetToPage({
+      ...current,
+      presets: current.presets.map((p) => p.id === preset.id ? {
         ...p,
         styles: {
           ...p.styles,
@@ -1133,7 +1134,7 @@ function PageLayoutEditor({
           price: { ...price, translateY },
         },
       } : p),
-    });
+    }, preset.id, page));
   };
   const togglePage = (number: number) =>
     setState({
@@ -1286,6 +1287,9 @@ function PageLayoutEditor({
       </div>
       <div className="apply-pages">
         <h3>Apply preset to pages</h3>
+        <p style={{ margin: "0 0 10px", color: "#777", fontSize: 13 }}>
+          The page you edit is selected automatically. Choose any additional pages below.
+        </p>
         <div>
           {manifest.map((p) => (
             <label key={cataloguePageKey(p)}>

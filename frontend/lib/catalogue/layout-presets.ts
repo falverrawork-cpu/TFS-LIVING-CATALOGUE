@@ -25,3 +25,4 @@ export function toExactCss(style?:ContentStyle):CSSProperties|undefined{return s
 export function toLogoCss(style?:ContentStyle):CSSProperties|undefined{return style?{"--logo-width":`${style.fontSize}mm`,...spacingCss(style)} as CSSProperties:undefined}
 export const aboutDefaultStyles:Record<string,ContentStyle>={pageTitle:{...defaultContentStyle,fontSize:72,fontWeight:700},brandTitle:{...defaultContentStyle,fontSize:28,fontWeight:700,paddingTop:30},description:{...defaultContentStyle,fontSize:22,fontWeight:400,paddingTop:18}};
 export function presetForPage(state:LayoutPresetState,page:number){return state.presets.find(p=>p.pageNumbers.includes(page))}
+export function assignPresetToPage(state:LayoutPresetState,presetId:string,page:number):LayoutPresetState{return {...state,presets:state.presets.map(p=>({...p,pageNumbers:p.id===presetId?Array.from(new Set([...p.pageNumbers,page])):p.pageNumbers.filter(n=>n!==page)}))}}
